@@ -7,7 +7,6 @@ on:
 
 jobs:
   build:
-    runs-alone: true
     runs-on: ubuntu-latest # Робот запустит для нас чистый виртуальный сервер на Linux
 
     steps:
