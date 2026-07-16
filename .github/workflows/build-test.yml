@@ -1,0 +1,20 @@
+name: Docker Build Test
+
+# Робот сработает автоматически при каждом push в ветку main
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-alone: true
+    runs-on: ubuntu-latest # Робот запустит для нас чистый виртуальный сервер на Linux
+
+    steps:
+    # 1. Робот скачивает наш код с репозитория
+    - name: Check out repository code
+      uses: actions/checkout@v4
+
+    # 2. Робот проверяет, собирается ли наш Docker-образ
+    - name: Build the Docker image
+      run: docker build . --file Dockerfile --tag my-web-app:test
