@@ -1,0 +1,32 @@
+services:
+
+  db-postgres:
+    image: postgres:15-alpine
+    container_name: compose-postgres-db
+    environment:
+      POSTGRES_PASSWORD: mysecretpassword
+    # НАЧАЛО ИЗМЕНЕНИЙ: привязываем внутреннюю папку Постгреса к нашему фоновому тому
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    # КОНЕЦ ИЗМЕНЕНИЙ
+    networks:
+      - compose_network
+
+  web-app:
+    build: .
+    container_name: compose-web-site
+    ports:
+      - "8080:3000"
+    networks:
+      - compose_network
+    depends_on:
+      - db-postgres
+
+networks:
+  compose_network:
+    driver: bridge
+
+# НАЧАЛО ИЗМЕНЕНИЙ: регистрируем новый именованный том в системе
+volumes:
+  postgres_data:
+# КОНЕЦ ИЗМЕНЕНИЙ
