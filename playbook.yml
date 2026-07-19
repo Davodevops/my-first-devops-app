@@ -1,0 +1,19 @@
+---
+# 1. На каких серверах запускать сценарий? Берем наш localhost из inventory.ini
+- name: Мой первый сценарий автоматизации
+  hosts: localhost
+  
+  # 2. Список задач, которые Ansible должен выполнить по очереди
+  tasks:
+
+    # Задача №1: Вывести приветственное сообщение (для проверки)
+    - name: Вывести приветствие в консоль
+      ansible.builtin.debug:
+        msg: "Привет! Ansible успешно управляет этим сервером! 🚀"
+
+    # Задача №2: Автоматически создать папку для логов, если её ещё нет
+    - name: Создать папку для логов нашего приложения
+      ansible.builtin.file:
+        path: /home/{{ ans_user | default(ansible_user_id) }}/app_project/ansible_logs
+        state: directory
+        mode: '0755'
