@@ -1,19 +1,24 @@
 ---
-# 1. На каких серверах запускать сценарий? Берем наш localhost из inventory.ini
-- name: Мой первый сценарий автоматизации
+- name: Полная автоматизация Docker Compose через Ansible
   hosts: localhost
-  
-  # 2. Список задач, которые Ansible должен выполнить по очереди
+  become: true # Этот флаг заменяет слово "sudo" — Ansible будет выполнять задачи от имени администратора
+
   tasks:
+    # Задача №1: Проверяем, установлена ли утилита curl (она нужна для системы)
+    - name: Убедиться, что curl установлен в системе
+      ansible.builtin.apt:
+        name: curl
+        state: present # present означает "должен быть установлен"
 
-    # Задача №1: Вывести приветственное сообщение (для проверки)
-    - name: Вывести приветствие в консоль
-      ansible.builtin.debug:
-        msg: "Привет! Ansible успешно управляет этим сервером! 🚀"
+    # Задача №2: Проверяем, работает ли служба Docker
+    - name: Убедиться, что служба Docker запущена и активна
+      ansible.builtin.systemd:
+        name: docker
+        state: started
+        enabled: true # Сделать так, чтобы Docker сам запускался при включении компьютера
 
-    # Задача №2: Автоматически создать папку для логов, если её ещё нет
-    - name: Создать папку для логов нашего приложения
-      ansible.builtin.file:
-        path: /home/{{ ans_user | default(ansible_user_id) }}/app_project/ansible_logs
-        state: directory
-        mode: '0755'
+    # Задача №3: Запускаем наш Docker Compose проект одной кнопкой
+    - name: Запустить веб-сайт и базу данных через Docker Compose
+      community.docker.docker_compose_v2:
+        project_src: /home/qwer/app_project
+        state: present
