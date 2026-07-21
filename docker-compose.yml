@@ -5,10 +5,8 @@ services:
     container_name: compose-postgres-db
     environment:
       POSTGRES_PASSWORD: mysecretpassword
-    # НАЧАЛО ИЗМЕНЕНИЙ: привязываем внутреннюю папку Постгреса к нашему фоновому тому
     volumes:
       - postgres_data:/var/lib/postgresql/data
-    # КОНЕЦ ИЗМЕНЕНИЙ
     networks:
       - compose_network
 
@@ -22,11 +20,29 @@ services:
     depends_on:
       - db-postgres
 
+  # НАЧАЛО НОВЫХ ИЗМЕНЕНИЙ
+  # 3. Сервис визуализации Grafana
+  grafana:
+    image: grafana/grafana-oss:10.0.0
+    container_name: compose-grafana
+    ports:
+      - "3000:3000" # Графана работает на порту 3000
+    networks:
+      - compose_network
+
+  # 4. Сервис сбора метрик Prometheus
+  prometheus:
+    image: prom/prometheus:v2.45.0
+    container_name: compose-prometheus
+    ports:
+      - "9090:9090" # Прометеус работает на порту 9090
+    networks:
+      - compose_network
+  # КОНЕЦ НОВЫХ ИЗМЕНЕНИЙ
+
 networks:
   compose_network:
     driver: bridge
 
-# НАЧАЛО ИЗМЕНЕНИЙ: регистрируем новый именованный том в системе
 volumes:
   postgres_data:
-# КОНЕЦ ИЗМЕНЕНИЙ
